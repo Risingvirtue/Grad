@@ -1,7 +1,7 @@
 var angle = 0;
 const grav = 9.8;
 var t = 0.01;
-var velocity = 20;
+var velocity = 60;
 var original = $("#cap").css("top");
 var size = 250;
 var height = window.innerHeight - parseFloat(original);
@@ -29,7 +29,7 @@ function throwCap() {
 }
 
 function upwards() {
-
+	
 	height += velocity;
 	velocity = velocity - t * grav;
 	cameraHeight += maxHeight / maxT;
