@@ -71,7 +71,7 @@ body {
 #grass {
 	background-color:#629632;
 	position: absolute;
-	top: 70%;
+	bottom: 0%;
 	height: 30%;
 	width: 100%;
 	z-index: -1;

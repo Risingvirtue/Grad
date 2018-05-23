@@ -1,10 +1,10 @@
 var angle = 0;
 const grav = 9.8;
 var t = 0.01;
-var velocity = 30;
+var velocity = 20;
 var original = $("#cap").css("top");
 var size = 250;
-var height = 0;
+var height = window.innerHeight - parseFloat(original);
 var cameraHeight = 0;
 var maxHeight = 0;
 var currT = 0;
@@ -12,6 +12,9 @@ var maxT = 0;
 original = original.slice(0, original.length - 2);
 var windowHeight = window.innerHeight;
 var grassHeight = $("#grass").css("height");
+grassHeight = parseFloat(grassHeight.slice(0, original.length - 2));
+var launch = false;
+var currSize = size;
 $(document).ready(function() {
 
 })
@@ -33,35 +36,35 @@ function upwards() {
 
 	//$("#cap").css("top", top + "px");
 	
-	if (original < height * 1.1) {
-		var range = getRange(height* 1.1, 1000);
 	
+		
+		var range = getRange(height* 1.1, 1000);
+		//console.log(range);
 		var topPercent = (range.upper - height) / (range.upper - range.lower);
+		//console.log(topPercent * window.innerHeight - currSize / 2, $("#cap").css("top"));
+		
 		topPercent *= 100;
 		$("#cap").css("top", topPercent + "%");
-		$("#grass").css({"top": "70%"});
-	} else {
-		$("#cap").css("top", parseFloat(original) - height);
-		$("#grass").css({"top": "70%"});
 		
-	}
+		$("#grass").css({height: grassHeight - range.lower});
+	
 }
 
 function spin() {
 	
 	upwards();
 	
-	var ratio = calcRatio(height, 500);
-	//console.log(ratio);
+	var ratio = calcRatio(height, 1000);
+	currSize = (size / ratio);
 	changeCapSize(size / ratio);
 	
-	angle += 1;
+	angle += 2;
 	angle = angle % 360;
 	$("#cap").css({'transform': 'rotate(' + angle + 'deg)'});
 	
 	$(".circle-container").css({'transform': 'rotate(-'  + (angle) + 'deg)'})
 	
-	if (height >= 0) {
+	if (height >= window.innerHeight - parseFloat(original)) {
 		requestAnimationFrame(spin);
 	}
 	currT++;
@@ -78,7 +81,6 @@ function changeCapSize(size) {
 	var ropeWidth = circle / 4;
 	$("#tassle").css({height: (size / 2) * 1.1, width: ropeWidth, top: circle / 2, left: (circle - ropeWidth) / 2});
 	$("#rope").css({top: (size / 2) * 1.1, height: circle, width: circle, left: 0, 'border-radius': circle / 2});
-	
 	$("#cap").css({top: center.y - (1 + size / 2), left: center.x - (1 + size / 2)})
 	
 }
@@ -107,6 +109,9 @@ function calcRatio(height, distance) {
 }
 
 function getRange(height, distance) {
+	if (height < windowHeight) {
+		return {lower: 0, upper: windowHeight};
+	}
 	var initialCameraAngle = Math.atan2(windowHeight, distance);
 	var tilt = getTilt(height, distance);
 	var range = {lower: Math.tan(tilt) * distance, upper: Math.tan(initialCameraAngle + tilt) * distance};
