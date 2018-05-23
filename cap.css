@@ -67,3 +67,12 @@ body {
 	top: calc(50% - 37.5px);
 	left: calc(25% - 75px);
 }
+
+#grass {
+	background-color:#629632;
+	position: absolute;
+	top: 70%;
+	height: 30%;
+	width: 100%;
+	z-index: -1;
+}

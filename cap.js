@@ -1,7 +1,7 @@
 var angle = 0;
 const grav = 9.8;
 var t = 0.01;
-var velocity = 20;
+var velocity = 30;
 var original = $("#cap").css("top");
 var size = 250;
 var height = 0;
@@ -9,7 +9,9 @@ var cameraHeight = 0;
 var maxHeight = 0;
 var currT = 0;
 var maxT = 0;
-original = original.slice(0, original.length -2);
+original = original.slice(0, original.length - 2);
+var windowHeight = window.innerHeight;
+var grassHeight = $("#grass").css("height");
 $(document).ready(function() {
 
 })
@@ -24,18 +26,25 @@ function throwCap() {
 }
 
 function upwards() {
-	
-	var top = $("#cap").css("top");
-	top = top.slice(0,top.length - 2);
-	
-	//top -= velocity;
+
 	height += velocity;
 	velocity = velocity - t * grav;
 	cameraHeight += maxHeight / maxT;
-	console.log(cameraHeight);
-	$("#cap").css("top", (original - cameraHeight) + "px");
-	
 
+	//$("#cap").css("top", top + "px");
+	
+	if (original < height * 1.1) {
+		var range = getRange(height* 1.1, 1000);
+	
+		var topPercent = (range.upper - height) / (range.upper - range.lower);
+		topPercent *= 100;
+		$("#cap").css("top", topPercent + "%");
+		$("#grass").css({"top": "70%"});
+	} else {
+		$("#cap").css("top", parseFloat(original) - height);
+		$("#grass").css({"top": "70%"});
+		
+	}
 }
 
 function spin() {
@@ -43,7 +52,7 @@ function spin() {
 	upwards();
 	
 	var ratio = calcRatio(height, 500);
-	
+	//console.log(ratio);
 	changeCapSize(size / ratio);
 	
 	angle += 1;
@@ -86,6 +95,27 @@ function getMaxHeight(grav, velocity) {
 }
 
 function calcRatio(height, distance) {
-	var length = Math.sqrt(distance*distance + height * height);
-	return length / distance;
+	
+	height = height + 400;
+	if (height < windowHeight) {
+		return 1;
+	}
+	var initialRatio = size / windowHeight;
+	var range = getRange(height, distance);
+	
+	return (range.upper - range.lower) / windowHeight;
+}
+
+function getRange(height, distance) {
+	var initialCameraAngle = Math.atan2(windowHeight, distance);
+	var tilt = getTilt(height, distance);
+	var range = {lower: Math.tan(tilt) * distance, upper: Math.tan(initialCameraAngle + tilt) * distance};
+	return range;
+}
+
+function getTilt(height, distance) {
+	var initialCameraAngle = Math.atan2(windowHeight, distance);
+	var newAngle = Math.atan2(height, distance);
+	var tilt = newAngle - initialCameraAngle;
+	return tilt;
 }
