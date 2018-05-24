@@ -70,10 +70,11 @@ body {
 }
 
 #grass {
+
 	position: absolute;
+	bottom: 0%;
 	height: 30%;
 	width: 100%;
-	background-color: #458B00;
-	top: 70%;
+	background-color: green;
 	z-index: -1;
 }
