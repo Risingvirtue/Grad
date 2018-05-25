@@ -56,8 +56,20 @@ body {
 	
 }
 
-#string {
-	 
+.strings {
+	position: relative;
+	top: 115px;
+	left: 7px;
+}
+
+.string1 {
+	height: 100px;
+	width: 4px;
+	background-color: red;
+	margin-top: -32.9px;
+	margin-left: -46.9846px;
+	transform: rotate(70deg);
+	
 }
 
 #throw {
