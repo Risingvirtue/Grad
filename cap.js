@@ -56,7 +56,7 @@ function upwards() {
 
 function spin() {
 
-	//upwards();
+	upwards();
 	
 	var ratio = calcRatio(height, 1000);
 	currSize = (size / ratio);
