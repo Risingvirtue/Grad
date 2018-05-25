@@ -20,9 +20,12 @@ var currSize = size;
 $(document).ready(function() {
 
 })
-
-
-
+/*
+setInterval(function() {
+	$(".string1").css({transform: "rotate(" + angle + "deg)"});
+	angle++;
+}, 10)
+*/
 
 function throwCap() {
 	//maxHeight = getMaxHeight(grav, velocity) / t;
@@ -41,7 +44,7 @@ function upwards() {
 	
 	
 		
-		var range = getRange(height* 1.1, 1000);
+		var range = getRange(height, 1000);
 		//console.log(range);
 		var topPercent = (range.upper - height) / (range.upper - range.lower);
 		//console.log(topPercent * window.innerHeight - currSize / 2, $("#cap").css("top"));
