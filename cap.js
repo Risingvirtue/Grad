@@ -1,33 +1,12 @@
-var angle = 0;
-const grav = 9.8;
-var t = 0.01;
-var velocity = 60;
-var original = $("#cap").css("top");
-var size = 250;
-var height = window.innerHeight - parseFloat(original);
-var cameraHeight = 0;
-var maxHeight = 0;
-var currT = 0;
-var maxT = 0;
-original = original.slice(0, original.length - 2);
 var windowHeight = window.innerHeight;
 var grassHeight = $("#grass").css("height");
-grassHeight = parseFloat(grassHeight.slice(0, original.length - 2));
-var launch = false;
-var currSize = size;
+grassHeight = parseFloat(grassHeight.slice(0, grassHeight.length - 2));
+var caps = [];
 $(document).ready(function() {
-
+	caps.push(new cap())
 })
-/*
-setInterval(function() {
-	$(".string1").css({transform: "rotate(" + angle + "deg)"});
-	angle++;
-}, 10)
-*/
 
 function throwCap() {
-	maxHeight = getMaxHeight(grav, velocity) / t;
-	maxT = 100 * velocity / grav;
 	requestAnimationFrame(spin);
 }
 

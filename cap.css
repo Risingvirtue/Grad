@@ -79,18 +79,36 @@ body {
 
 .strings {
 	position: relative;
+	
+}
+
+#strings {
 	top: 115px;
 	left: 7px;
 }
 
 .string1 {
+	position: absolute;
+	background-color: red;
+	transform: rotate(15deg);
+}
+#string1 {
 	height: 30px;
 	width: 4px;
-	background-color: red;
 	margin-top: -0.5112x;
 	margin-left: -3.882px;
-	transform: rotate(15deg);
-	
+}
+
+.string2 {
+	position: absolute;
+	background-color: red;
+	transform: rotate(0deg);
+}
+
+.string3 {
+	position: absolute;
+	background-color: red;
+	transform: rotate(-15deg);
 }
 
 #throw {
