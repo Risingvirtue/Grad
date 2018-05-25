@@ -90,7 +90,7 @@ body {
 .string1 {
 	position: absolute;
 	background-color: red;
-	transform: rotate(15deg);
+	transform: rotate(10deg);
 }
 #string1 {
 	height: 30px;
@@ -108,7 +108,7 @@ body {
 .string3 {
 	position: absolute;
 	background-color: red;
-	transform: rotate(-15deg);
+	transform: rotate(-10deg);
 }
 
 #throw {

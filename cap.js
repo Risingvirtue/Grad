@@ -2,55 +2,64 @@ var windowHeight = window.innerHeight;
 var grassHeight = $("#grass").css("height");
 grassHeight = parseFloat(grassHeight.slice(0, grassHeight.length - 2));
 var caps = [];
+var averageHeight = 0;
+var range = null;
 $(document).ready(function() {
-	caps.push(new cap())
+	for (var i = 0; i < 2; i++) {
+		var info = generateInfo();
+		info.number = i;
+		caps.push(new cap(info));
+	}
 })
+function generateInfo() {
+	var info = {};
+	info.size = Math.random() * 50 + 200;
+	info.x = Math.random() * (window.innerWidth - info.size) + info.size / 2;
+	info.height = Math.random() * (windowHeight - grassHeight - info.size) + grassHeight + info.size / 2;
+	info.spin = Math.floor(Math.random() * 6) - 3;
+	info.angle = Math.random() * 90;
+	
+	return info;
+	
+}
+
+function setAverage() {
+	averageHeight = 0;
+	for (var i = 0 ; i < caps.length; i++) {
+		averageHeight += caps[i].height;
+	}
+	averageHeight /= caps.length;
+}
 
 function throwCap() {
 	requestAnimationFrame(spin);
 }
 
 function upwards() {
+	   
+	for (var i = 0; i < caps.length; i++) {
+		var cap = caps[i];
+		var ratio = calcRatio(cap.height, 1000, range);
 	
-	height += velocity;
-	velocity = velocity - t * grav;
-	cameraHeight += maxHeight / maxT;
-
-	//$("#cap").css("top", top + "px");
+		cap.incrementTime();
+		cap.moveCap(range);
+		cap.adjustSize(ratio);
+		cap.spinCap();
+		
+	}
 	
-	
-		
-		var range = getRange(height, 1000);
-		//console.log(range);
-		var topPercent = (range.upper - height) / (range.upper - range.lower);
-		//console.log(topPercent * window.innerHeight - currSize / 2, $("#cap").css("top"));
-		
-		topPercent *= 100;
-		$("#cap").css("top", topPercent + "%");
-		
-		$("#grass").css({height: grassHeight - range.lower});
+	$("#grass").css({height: grassHeight - range.lower});
 	
 }
 
 function spin() {
-	
+	setAverage();
+	range = getRange(averageHeight, 1000);
 	upwards();
 	
-	var ratio = calcRatio(height, 1000);
-	currSize = (size / ratio);
-	changeCapSize(size / ratio);
-	
-	angle += 2;
-	angle = angle % 360;
-	$("#cap").css({'transform': 'rotate(' + angle + 'deg)'});
-	
-	$(".circle-container").css({'transform': 'rotate(-'  + (angle) + 'deg)'})
-	
-	if (height >= window.innerHeight - parseFloat(original)) {
+	if (averageHeight > grassHeight) {
 		requestAnimationFrame(spin);
 	}
-	currT++;
-	
 }
 
 function changeCapSize(size) {
@@ -78,15 +87,7 @@ function getMaxHeight(grav, velocity) {
 	return velocity * velocity / (grav * 2);
 }
 
-function calcRatio(height, distance) {
-	
-	height = height + 400;
-	if (height < windowHeight) {
-		return 1;
-	}
-	var initialRatio = size / windowHeight;
-	var range = getRange(height, distance);
-	
+function calcRatio(height, distance, range) {
 	return (range.upper - range.lower) / windowHeight;
 }
 

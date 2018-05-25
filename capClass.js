@@ -1,10 +1,19 @@
-function cap(size, x, height, number, velocity) {
-	this.size = size;
-	this.x = x;
-	this.height= height;
-	this.number = number;
-	this.velocity = velocity;
+function cap(info) {
+	this.size = info.size;
+	this.x = info.x;
+	this.height= info.height;
+	this.number = info.number;
+	this.velocity = info.velocity;
+	this.spin = info.spin;
+	this.angle = info.angle;
 	this.t = 0.01;
+	
+	this.spinCap = function() {
+		this.angle = (this.angle + this.spin) % 360;
+		$("#cap" + this.number).css({'transform': 'rotate(' + this.angle + 'deg)'});
+		$("#circle-container" + this.number).css({'transform': 'rotate(-'  + this.angle + 'deg)'})
+	}
+	
 	this.init = function() {
 		var contents = '<div class="cap" id="cap' + this.number +'">' +
 							'<div class="circle-container" id="circle-container' + this.number +'">' +
@@ -19,10 +28,21 @@ function cap(size, x, height, number, velocity) {
 						'</div>';
 		var oldContents = $("#container").html();
 		$("#container").html(oldContents + contents);
-		$("#cap" + this.number).css({top: window.innerHeight - this.height, left: this.x})
+		//adust location
+		$("#cap" + this.number).css({top: window.innerHeight - this.height, left: this.x});
+		
 		this.changeCapSize(this.size);
+		
+		//adjustZ
+		$("#cap" + this.number).css({"z-index": this.number * 3});
+		$("#circle" + this.number).css({"z-index": this.number * 3 + 2});
+		$("#tassle" + this.number).css({"z-index": this.number * 3 + 1});
+		$("#rope" + this.number).css({"z-index": this.number * 3 + 2});
+		$("#strings" + this.number).css({"z-index": this.number * 3 + 1});
+		
+		
+		this.spinCap();
 	}
-	
 	
 	this.changeCapSize = function(size) {
 		var center = this.getCenter();
@@ -30,16 +50,16 @@ function cap(size, x, height, number, velocity) {
 		var circle = 8 * size / 125;
 		var margin = (size - circle) / 2;
 		$("#circle-container" + this.number).css({height: circle, width: circle, top: margin, left: margin});
-		$("#circle" + this.number).css({height: circle, width: circle, 'border-radius': circle / 2});
+		$("#circle" + this.number).css({height: circle, width: circle, 'border-radius': circle});
 		var ropeWidth = circle / 4;
 		var ropeLength = (size / 2) * 1.1;
 		$("#tassle"+ this.number).css({height: ropeLength, width: ropeWidth, top: circle / 2, left: (circle - ropeWidth) / 2});
-		$("#rope"+ this.number).css({top: (size / 2) * 1.1, height: circle, width: circle, left: 0, 'border-radius': circle / 2});
+		$("#rope"+ this.number).css({top: (size / 2) * 1.1, height: circle, width: circle, left: 0, 'border-radius': circle});
 		$("#cap"+ this.number).css({top: center.y - (1 + size / 2), left: center.x - (1 + size / 2)});
 		var stringHeight = .2 * size;
 		var stringWidth = circle / 4;
-		var offSetY = stringHeight - Math.cos(10 * Math.PI / 180) * stringHeight;
-		var offSetX = stringHeight * Math.sin(10 * Math.PI / 180);
+		var offSetY = stringHeight - Math.cos(7 * Math.PI / 180) * stringHeight;
+		var offSetX = stringHeight * Math.sin(7 * Math.PI / 180);
 		$("#strings" + this.number).css({top: ropeLength - circle / 2, left: (circle + 2 - stringWidth) / 2});
 		$("#string1" + this.number).css({height: stringHeight, width: stringWidth, "margin-top": -offSetY, "margin-left": -offSetX});
 		$("#string2" + this.number).css({height: stringHeight, width: stringWidth});
@@ -54,18 +74,26 @@ function cap(size, x, height, number, velocity) {
 	this.init();
 	
 	this.incrementTime = function() {
-		this.height += velocity;
+		this.height += this.velocity;
 		this.velocity = this.velocity - this.t * 9.8;	
 	}
 	
 	this.moveCap = function(range) {
-		if (this.height < range.lower || this.height > range.upper) {
+		if (this.height + this.size / 2 < range.lower || this.height - this.size / 2 > range.upper) {
 			$("#cap" + this.number).css({display: "none"});
 		} else {
 			$("#cap" + this.number).css({display: "block"});
-			var topPercent = (range.upper - this.height) / (range.upper - range.lower);
+			var topPercent = (range.upper - (this.height + this.size / 2)) / (range.upper - range.lower);
 			topPercent *= 100;
 			$("#cap" + this.number).css("top", topPercent + "%");
 		}
 	}
+	
+	this.adjustSize = function(ratio) {
+		console.log(this.size);
+		console.log(ratio);
+		this.changeCapSize(this.size / ratio);
+	}
+	
+	
 }
