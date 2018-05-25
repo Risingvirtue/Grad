@@ -61,16 +61,36 @@ body {
 	position: relative;
 	top: 115px;
 	left: 7px;
+	z-index: -1;
 }
 
 .string1 {
-	height: 100px;
+	position: absolute;
+	height: 30px;
 	width: 4px;
 	background-color: red;
-	margin-top: -32.9px;
-	margin-left: -46.9846px;
-	transform: rotate(70deg);
+	margin-top: -0.512px;
+	margin-left: -3.88px;
+	transform: rotate(15deg);
+}
+
+.string2 {
+	position: absolute;
+	height: 30px;
+	width: 4px;
+	background-color: red;
 	
+	transform: rotate(0deg);
+}
+
+.string3 {
+	position: absolute;
+	height: 30px;
+	width: 4px;
+	background-color: red;
+	margin-top: -0.512px;
+	margin-left: 3.88px;
+	transform: rotate(-15deg);
 }
 
 #throw {
