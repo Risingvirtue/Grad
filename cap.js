@@ -1,82 +1,120 @@
-var angle = 0;
-
-const grav = 9.8;
-var t = 0.01;
-var velocity = 60;
-
-var original = $("#cap").css("top");
-var size = 250;
-var height = window.innerHeight - parseFloat(original);
-var cameraHeight = 0;
-var maxHeight = 0;
-var currT = 0;
-var maxT = 0;
-original = original.slice(0, original.length - 2);
+const grav = 9.8
 var windowHeight = window.innerHeight;
 var grassHeight = $("#grass").css("height");
-grassHeight = parseFloat(grassHeight.slice(0, original.length - 2));
-var launch = false;
-var currSize = size;
-$(document).ready(function() {
+grassHeight = parseFloat(grassHeight.slice(0, grassHeight.length - 2));
+var caps = [];
+var averageHeight = 0;
+var range = {lower: 0, upper: window.innerHeight};
+var maxHeight = 0;
+var clouds = [];
+var cloudUrls = ["http://www.scri8e.com/stars/PNG_Clouds/zc06.png?filename=./zc06.png&w0=800&h0s=289&imgType=3&h1=50&w1=140",
+				"http://freepngimages.com/wp-content/uploads/2016/02/clouds-transparent-background-2.png"];
+var cloudRatio = 289 / 800;
 
+$(document).ready(function() {
+	
+	
+	for (var i = 0; i < 10; i++) {
+		var info = generateCapInfo();
+		info.number = i;
+		maxHeight = Math.max(maxHeight, getMaxHeight(grav, info.velocity) * 100 + info.height);
+		caps.push(new cap(info));
+	}
+	
+	
+	
+	for (var i = 0; i < 10; i++) {
+		var info = generateCloudInfo();
+		info.id = i;
+		info.url = cloudUrls[i % 2];
+		clouds.push(new cloud(info));
+		clouds[i].show(range);
+		clouds[i].move();
+	}
+	
 })
-/*
-setInterval(function() {
-	$(".string1").css({transform: "rotate(" + angle + "deg)"});
-	angle++;
-}, 10)
-*/
+function generateCapInfo() {
+	var info = {};
+	info.size = Math.random() * 50 + 100;
+	info.x = Math.random() * (window.innerWidth - info.size * 2) + info.size;
+	info.height = Math.random() * (windowHeight - grassHeight - info.size * 2) + grassHeight + info.size;
+	//info.height = 0;
+	info.spin = Math.random() * 3;
+	info.angle = Math.random() * 90;
+	info.velocity = Math.random() * 5 + 10;
+	return info;
+	
+}
+
+
+function generateCloudInfo() {
+	var info = {};
+	info.width = Math.random() * (window.innerWidth /4) + window.innerWidth / 8;
+	info.ratio = cloudRatio;
+	info.x = Math.random() * (window.innerWidth - info.width) + info.width / 2;
+	info.height = Math.random() * (maxHeight) + (windowHeight + info.width);
+	info.velocity = Math.random() * 10 - 5;
+	return info;
+}
+function setAverage() {
+	averageHeight = 0;
+	for (var i = 0 ; i < caps.length; i++) {
+		if (caps[i].height > averageHeight) {
+			averageHeight = caps[i].height;
+		}
+	}
+	
+	averageHeight += 200;
+}
 
 function throwCap() {
-	//maxHeight = getMaxHeight(grav, velocity) / t;
-	maxT = 100 * velocity / grav;
+	//$("#throw").css({display: "none"})
+	for (var i = 0; i < caps.length;i++) {
+		$("#cap" + caps[i].number).css({visibility: "visible"});
+	}
 	requestAnimationFrame(spin);
 }
 
 function upwards() {
 
-	height += velocity;
-	velocity = velocity - t * grav;
-	cameraHeight += maxHeight / maxT;
-
-
-	//$("#cap").css("top", top + "px");
+	   
+	for (var i = 0; i < caps.length; i++) {
+		var cap = caps[i];
+		var ratio = calcRatio(cap.height, range);
+		cap.incrementTime();
+		cap.moveCap(range);
+		cap.adjustSize(ratio);
+		cap.spinCap();
+	}
 	
+	for (var i = 0; i < clouds.length; i++) {
+		var cloud = clouds[i];
+		cloud.move();
+		cloud.show(range);
+	}
 	
-		
-		var range = getRange(height, 1000);
-		//console.log(range);
-		var topPercent = (range.upper - height) / (range.upper - range.lower);
-		//console.log(topPercent * window.innerHeight - currSize / 2, $("#cap").css("top"));
-		
+	$("#grass").css({height: grassHeight - range.lower});
+	
+		var topPercent = (range.upper - (maxHeight + 100)) / (range.upper - range.lower);
 		topPercent *= 100;
-		$("#cap").css("top", topPercent + "%");
 		
-		$("#grass").css({height: grassHeight - range.lower});
+		$("#sun").css({display: "block" ,"top": topPercent + "%"});
+
 	
 }
 
 
 function spin() {
 
+	setAverage();
+	range = getRange(averageHeight, 1000);
+	
 	upwards();
 	
-	var ratio = calcRatio(height, 1000);
-	currSize = (size / ratio);
-	changeCapSize(size / ratio);
+	if (averageHeight > grassHeight) {
 
-	
-	angle += 2;
-
-	angle = angle % 360;
-	$("#cap").css({'transform': 'rotate(' + angle + 'deg)'});
-	$(".circle-container").css({'transform': 'rotate(-'  + (angle) + 'deg)'})
-	
-	if (height >= window.innerHeight - parseFloat(original)) {
 		requestAnimationFrame(spin);
 	}
-	currT++;
-	
 }
 
 function changeCapSize(size) {
@@ -100,24 +138,17 @@ function getCenter() {
 }
 
 function getMaxHeight(grav, velocity) {
-	
 	return velocity * velocity / (grav * 2);
 }
 
-function calcRatio(height, distance) {
-	
-	height = height + 400;
-	if (height < windowHeight) {
-		return 1;
-	}
-	var initialRatio = size / windowHeight;
-	var range = getRange(height, distance);
-	
+function calcRatio(height, range) {
 	return (range.upper - range.lower) / windowHeight;
 }
 
 function getRange(height, distance) {
+	
 	if (height < windowHeight) {
+		
 		return {lower: 0, upper: windowHeight};
 	}
 	var initialCameraAngle = Math.atan2(windowHeight, distance);
