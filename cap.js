@@ -20,7 +20,7 @@ function createIcons() {
 	for (var i = 1; i < 11; i++) {
 		var info = generateCapInfo(i);
 		info.number = i;
-		maxHeight = Math.max(maxHeight, getMaxHeight(grav, info.velocity) * 200 + info.height);
+		maxHeight = Math.max(maxHeight, getMaxHeight(grav, info.velocity) * 100 + info.height);
 		caps.push(new cap(info));
 	}
 	
@@ -39,7 +39,7 @@ function generateCapInfo(i) {
 	var info = {};
 	info.size = Math.random() * 50 + 100;
 	var windowLength = (window.innerWidth - info.size * 2);
-	info.x = Math.random() * (windowLength) / 10 + info.size + i * windowLength / 10;
+	info.x = Math.random() * (windowLength) / 10 + info.size + (i - 1) * windowLength / 10;
 	info.height = Math.random() * (windowHeight - grassHeight - info.size * 2) + grassHeight + info.size;
 	//info.height = 0;
 	info.spin = Math.random() * 3;

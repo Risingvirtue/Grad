@@ -7,7 +7,7 @@ function cap(info) {
 	this.velocity = info.velocity;
 	this.spin = info.spin;
 	this.angle = info.angle;
-	this.t = 0.005;
+	this.t = 0.01;
 	this.side = 0;
 	this.sideSpeed = 1;
 	this.time = 0;
