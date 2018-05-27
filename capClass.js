@@ -8,11 +8,25 @@ function cap(info) {
 	this.spin = info.spin;
 	this.angle = info.angle;
 	this.t = 0.01;
-	
+	this.side = 0;
+	this.sideSpeed = 1;
+	this.time = 0;
+	this.length = 0;
 	this.spinCap = function() {
 		this.angle = (this.angle + this.spin) % 360;
 		$("#cap" + this.number).css({'transform': 'rotate(' + this.angle + 'deg)'});
-		$("#circle-container" + this.number).css({'transform': 'rotate(-'  + this.angle + 'deg)'})
+		var angle = this.angle;
+		if (this.velocity < 0) {
+			
+			this.length = this.length + Math.floor(-this.velocity);
+			if (this.length >= 80) {
+				angle = this.angle + 180;
+			}
+		}
+		angle += Math.sin(this.time * 180 * Math.PI / 180) * 3 * this.sideSpeed;
+		
+		$("#circle-container" + this.number).css({'transform': 'rotate(-'  + angle + 'deg)'});
+		
 	}
 	
 	this.init = function() {
@@ -54,13 +68,18 @@ function cap(info) {
 		$("#circle" + this.number).css({height: circle, width: circle, 'border-radius': circle});
 		var ropeWidth = circle / 4;
 		var ropeLength = (size / 2) * 1.1;
+		
+		if (this.length >=0 && this.length <= 160) {
+		
+			ropeLength *= Math.abs(this.length - 80) / 80;
+		}
 		$("#tassle"+ this.number).css({height: ropeLength, width: ropeWidth, top: circle / 2, left: (circle - ropeWidth) / 2});
-		$("#rope"+ this.number).css({top: (size / 2) * 1.1, height: circle, width: circle, left: 0, 'border-radius': circle});
+		$("#rope"+ this.number).css({top: ropeLength, height: circle, width: circle, left: 0, 'border-radius': circle});
 		$("#cap"+ this.number).css({top: center.y - (1 + size / 2), left: center.x - (1 + size / 2)});
-		var stringHeight = .2 * size;
+		var stringHeight = .5 * size;
 		var stringWidth = circle / 4;
-		var offSetY = stringHeight - Math.cos(7 * Math.PI / 180) * stringHeight;
-		var offSetX = stringHeight * Math.sin(7 * Math.PI / 180);
+		var offSetY = stringHeight - Math.cos(4 * Math.PI / 180) * stringHeight;
+		var offSetX = stringHeight * Math.sin(4 * Math.PI / 180);
 		$("#strings" + this.number).css({top: ropeLength - circle / 2, left: (circle + 2 - stringWidth) / 2});
 		$("#string1" + this.number).css({height: stringHeight, width: stringWidth, "margin-top": -offSetY, "margin-left": -offSetX});
 		$("#string2" + this.number).css({height: stringHeight, width: stringWidth});
@@ -76,7 +95,8 @@ function cap(info) {
 	
 	this.incrementTime = function() {
 		this.height += this.velocity;
-		this.velocity = this.velocity - this.t * 9.8;	
+		this.velocity = this.velocity - this.t * 9.8;
+		this.time += 0.05;
 	}
 	
 	this.moveCap = function(range) {
@@ -110,7 +130,7 @@ function cloud(info) {
 		var contents = '<img class="cloud" id="cloud' + this.id + '" src="' + this.url + '"></img>';
 		var oldContents = $("#container").html();
 		$("#container").html(oldContents + contents);
-		console.log(contents);
+		
 		$("#cloud" + this.id).css({"z-index": 3 * this.id});
 	}
 	

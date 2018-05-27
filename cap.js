@@ -4,6 +4,7 @@ var grassHeight = $("#grass").css("height");
 grassHeight = parseFloat(grassHeight.slice(0, grassHeight.length - 2));
 var caps = [];
 var averageHeight = 0;
+var maxCap = null;
 var range = {lower: 0, upper: window.innerHeight};
 var maxHeight = 0;
 var clouds = [];
@@ -12,36 +13,38 @@ var cloudUrls = ["http://www.scri8e.com/stars/PNG_Clouds/zc06.png?filename=./zc0
 var cloudRatio = 289 / 800;
 
 $(document).ready(function() {
-	
-	
-	for (var i = 0; i < 10; i++) {
-		var info = generateCapInfo();
+})
+
+function createIcons() {
+	caps = [];
+	for (var i = 1; i < 11; i++) {
+		var info = generateCapInfo(i);
 		info.number = i;
 		maxHeight = Math.max(maxHeight, getMaxHeight(grav, info.velocity) * 100 + info.height);
 		caps.push(new cap(info));
 	}
 	
 	
+	clouds = [];
 	
 	for (var i = 0; i < 10; i++) {
 		var info = generateCloudInfo();
 		info.id = i;
 		info.url = cloudUrls[i % 2];
 		clouds.push(new cloud(info));
-		clouds[i].show(range);
-		clouds[i].move();
+		
 	}
-	
-})
-function generateCapInfo() {
+}
+function generateCapInfo(i) {
 	var info = {};
 	info.size = Math.random() * 50 + 100;
-	info.x = Math.random() * (window.innerWidth - info.size * 2) + info.size;
+	var windowLength = (window.innerWidth - info.size * 2);
+	info.x = Math.random() * (windowLength) / 10 + info.size + i * windowLength / 10;
 	info.height = Math.random() * (windowHeight - grassHeight - info.size * 2) + grassHeight + info.size;
 	//info.height = 0;
 	info.spin = Math.random() * 3;
 	info.angle = Math.random() * 90;
-	info.velocity = Math.random() * 5 + 10;
+	info.velocity = Math.random() * 10 + 5;
 	return info;
 	
 }
@@ -53,7 +56,7 @@ function generateCloudInfo() {
 	info.ratio = cloudRatio;
 	info.x = Math.random() * (window.innerWidth - info.width) + info.width / 2;
 	info.height = Math.random() * (maxHeight) + (windowHeight + info.width);
-	info.velocity = Math.random() * 10 - 5;
+	info.velocity = Math.random() * 2.5 - 1.25;
 	return info;
 }
 function setAverage() {
@@ -65,10 +68,15 @@ function setAverage() {
 	}
 	
 	averageHeight += 200;
+	
 }
 
 function throwCap() {
-	//$("#throw").css({display: "none"})
+	$("#congratz").fadeOut("slow");
+	$("#throw").css({display: "none"});
+	$("#message").css({visibility: 'hidden'})
+	$("#container").html("");
+	createIcons();
 	for (var i = 0; i < caps.length;i++) {
 		$("#cap" + caps[i].number).css({visibility: "visible"});
 	}
@@ -76,8 +84,6 @@ function throwCap() {
 }
 
 function upwards() {
-
-	   
 	for (var i = 0; i < caps.length; i++) {
 		var cap = caps[i];
 		var ratio = calcRatio(cap.height, range);
@@ -112,8 +118,14 @@ function spin() {
 	upwards();
 	
 	if (averageHeight > grassHeight) {
-
 		requestAnimationFrame(spin);
+	} else {
+		$("#congratz").fadeIn("slow");
+		$("#throw").css({display: "block"});
+		var rect = document.getElementById("congratz").getBoundingClientRect();
+		
+		$("#message").css({top: rect.bottom + 10, visibility: 'visible'})
+		
 	}
 }
 
