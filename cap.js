@@ -20,7 +20,7 @@ function createIcons() {
 	for (var i = 1; i < 11; i++) {
 		var info = generateCapInfo(i);
 		info.number = i;
-		maxHeight = Math.max(maxHeight, getMaxHeight(grav, info.velocity) * 100 + info.height);
+		maxHeight = Math.max(maxHeight, getMaxHeight(grav, info.velocity) * 200 + info.height);
 		caps.push(new cap(info));
 	}
 	
